@@ -29,6 +29,7 @@ services:
       DB_NAME: usuarios_postgres
       DB_USER: user
       DB_PASSWORD: 12345
+      JWT_SECRET_KEY: 12345
       GIN_MODE: debug
     volumes:
       - .:/app
