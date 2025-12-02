@@ -23,19 +23,39 @@ type FavoritosAPI struct {
 	DB *sql.DB
 }
 
+const (
+	msgInvalidIdUsuario     = "idUsuario inválido"
+	msgInvalidParams        = "Parámetros inválidos"
+
+	msgErrGetAlbums         = "Error al obtener álbumes favoritos"
+	msgErrAddAlbum          = "Error al añadir álbum a favoritos"
+	msgErrDeleteAlbum       = "Error al eliminar álbum favorito"
+	msgAlbumNotInFavorites  = "El álbum no estaba en favoritos"
+
+	msgErrGetArtistas       = "Error al obtener artistas favoritos"
+	msgErrAddArtista        = "Error al añadir artista a favoritos"
+	msgErrDeleteArtista     = "Error al eliminar artista favorito"
+	msgArtistaNotInFavorites= "El artista no estaba en favoritos"
+
+	msgErrGetCanciones      = "Error al obtener canciones favoritas"
+	msgErrAddCancion        = "Error al añadir canción a favoritos"
+	msgErrDeleteCancion     = "Error al eliminar canción favorita"
+	msgCancionNotInFavorites= "La canción no estaba en favoritos"
+)
+
 // Get /usuarios/:idUsuario/favoritos/albums
 // Obtener todos los albumes favoritos de un usuario
 func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosAlbumsGet(c *gin.Context) {
 	idUsuarioStr := c.Param("idUsuario")
 	idUsuario, err := strconv.Atoi(idUsuarioStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "idUsuario inválido"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": msgInvalidIdUsuario})
 		return
 	}
 
 	rows, err := api.DB.Query(`SELECT idAlbum FROM fav_album WHERE idUsuario = $1`, idUsuario)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al obtener álbumes favoritos"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": msgErrGetAlbums})
 		return
 	}
 	defer rows.Close()
@@ -73,7 +93,7 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosAlbumsIdAlbumDelete(c *gin.Co
 	idAlbum, err2 := strconv.Atoi(idAlbumStr)
 
 	if err1 != nil || err2 != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Parámetros inválidos"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": msgInvalidParams})
 		return
 	}
 
@@ -83,13 +103,13 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosAlbumsIdAlbumDelete(c *gin.Co
 	`, idUsuario, idAlbum)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al eliminar álbum favorito"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": msgErrDeleteAlbum})
 		return
 	}
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "El álbum no estaba en favoritos"})
+		c.JSON(http.StatusNotFound, gin.H{"error": msgAlbumNotInFavorites})
 		return
 	}
 
@@ -106,7 +126,7 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosAlbumsIdAlbumPost(c *gin.Cont
 	idAlbum, err2 := strconv.Atoi(idAlbumStr)
 
 	if err1 != nil || err2 != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Parámetros inválidos"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": msgInvalidParams})
 		return
 	}
 
@@ -117,7 +137,7 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosAlbumsIdAlbumPost(c *gin.Cont
 	`, idUsuario, idAlbum)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al añadir álbum a favoritos"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": msgErrAddAlbum})
 		return
 	}
 
@@ -130,7 +150,7 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosArtistasGet(c *gin.Context) {
 	idUsuarioStr := c.Param("idUsuario")
 	idUsuario, err := strconv.Atoi(idUsuarioStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "idUsuario inválido"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": msgInvalidIdUsuario})
 		return
 	}
 
@@ -141,7 +161,7 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosArtistasGet(c *gin.Context) {
         WHERE f.idUsuario = $1
     `, idUsuario)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al obtener artistas favoritos"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": msgErrGetArtistas})
 		return
 	}
 	defer rows.Close()
@@ -172,7 +192,7 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosArtistasIdArtistaDelete(c *gi
 	idArtista, err2 := strconv.Atoi(idArtistaStr)
 
 	if err1 != nil || err2 != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Parámetros inválidos"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": msgInvalidParams})
 		return
 	}
 
@@ -182,13 +202,13 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosArtistasIdArtistaDelete(c *gi
 	`, idUsuario, idArtista)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al eliminar artista favorito"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": msgErrDeleteArtista})
 		return
 	}
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "El artista no estaba en favoritos"})
+		c.JSON(http.StatusNotFound, gin.H{"error": msgArtistaNotInFavorites})
 		return
 	}
 
@@ -205,7 +225,7 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosArtistasIdArtistaPost(c *gin.
 	idArtista, err2 := strconv.Atoi(idArtistaStr)
 
 	if err1 != nil || err2 != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Parámetros inválidos"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": msgInvalidParams})
 		return
 	}
 
@@ -216,7 +236,7 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosArtistasIdArtistaPost(c *gin.
 	`, idUsuario, idArtista)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al añadir artista a favoritos"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": msgErrAddArtista})
 		return
 	}
 
@@ -229,13 +249,13 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosCancionesGet(c *gin.Context) 
 	idUsuarioStr := c.Param("idUsuario")
 	idUsuario, err := strconv.Atoi(idUsuarioStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "idUsuario inválido"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": msgInvalidIdUsuario})
 		return
 	}
 
 	rows, err := api.DB.Query(`SELECT idCancion FROM fav_cancion WHERE idUsuario = $1`, idUsuario)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al obtener canciones favoritas"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": msgErrGetCanciones})
 		return
 	}
 	defer rows.Close()
@@ -271,7 +291,7 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosCancionesIdCancionDelete(c *g
 	idCancion, err2 := strconv.Atoi(idCancionStr)
 
 	if err1 != nil || err2 != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Parámetros inválidos"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": msgInvalidParams})
 		return
 	}
 
@@ -281,13 +301,13 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosCancionesIdCancionDelete(c *g
 	`, idUsuario, idCancion)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al eliminar canción favorita"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": msgErrDeleteCancion})
 		return
 	}
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "La canción no estaba en favoritos"})
+		c.JSON(http.StatusNotFound, gin.H{"error": msgCancionNotInFavorites})
 		return
 	}
 
@@ -304,7 +324,7 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosCancionesIdCancionPost(c *gin
 	idCancion, err2 := strconv.Atoi(idCancionStr)
 
 	if err1 != nil || err2 != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Parámetros inválidos"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": msgInvalidParams})
 		return
 	}
 
@@ -315,7 +335,7 @@ func (api *FavoritosAPI) UsuariosIdUsuarioFavoritosCancionesIdCancionPost(c *gin
 	`, idUsuario, idCancion)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al añadir canción a favoritos"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": msgErrAddCancion})
 		return
 	}
 
